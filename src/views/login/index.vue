@@ -47,8 +47,8 @@ const loginForm = ref({
   password: '111111'
 })
 const login = () => {
-  console.log('login');
-  userStore.userLogin(loginForm)
+  // console.log(loginForm.value);
+  userStore.userLogin(loginForm.value)
 }
 
 </script>
