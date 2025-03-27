@@ -23,7 +23,7 @@
           </el-form-item>
           <el-form-item label="" size="normal">
             <el-button
-            
+            :loading="loading"
             type="primary"
             class="login_btn"
               @click="login">登录</el-button>
@@ -39,16 +39,34 @@
 <script setup lang="ts">
 import { User, Lock } from '@element-plus/icons-vue'; 
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import useUserStore from '../../store/modules/user';
+import {  ElNotification } from 'element-plus'
 const userStore = useUserStore()
-
+const router = useRouter()
+let loading = ref(false)
 const loginForm = ref({
   username: 'admin',
   password: '111111'
 })
-const login = () => {
+const login = async () => {
+  loading.value = true
   // console.log(loginForm.value);
-  userStore.userLogin(loginForm.value)
+  try {
+    await userStore.userLogin(loginForm.value)  
+    router.push('/')
+    ElNotification({
+      type: 'success',
+      message: '登录成功',
+    })
+  } catch (error) {
+    loading.value = false
+    ElNotification({
+      type: 'error',
+      message: (error as Error).message,
+    
+    })
+  }
 }
 
 </script>
