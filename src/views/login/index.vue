@@ -3,17 +3,21 @@
     <el-row>
       <el-col :span="12" :xs="0">左边</el-col>
       <el-col :span="12" :xs="24">
-        <el-form class="login_form">
+        <el-form class="login_form"
+        :model="loginForm"
+        :rules="rules"
+        ref="loginForms"
+        >
           <h1>Hello</h1>
           <h2>欢迎来到德莱联盟</h2>
-          <el-form-item label="" size="normal">
+          <el-form-item prop="username" label="" size="normal">
             <el-input 
             v-model="loginForm.username"
             :prefix-icon='User'
              />
             
           </el-form-item>
-          <el-form-item label="" size="normal">
+          <el-form-item prop="password"  label="" size="normal">
             <el-input 
             show-password
             v-model="loginForm.password"
@@ -41,16 +45,42 @@ import { User, Lock } from '@element-plus/icons-vue';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import useUserStore from '../../store/modules/user';
-import {  ElNotification } from 'element-plus'
+import { ElNotification } from 'element-plus'
+import { getTime } from '../../utils/time';
 const userStore = useUserStore()
 const router = useRouter()
+const loginForms = ref()
 let loading = ref(false)
 const loginForm = ref({
   username: 'admin',
   password: '111111'
 })
+
+const validatorUserName = (rule: any, value: any, callback: any) => {
+  rule  
+  if (value === 'admin') {
+    callback(new Error('用户名不能为admin'))
+  } else {
+    callback()
+  }
+}
+const rules = {
+  useranme: [
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { min: 5, max: 10, message: '用户名长度在5-10之间', trigger: 'blur' },
+    { pattern: /^[a-zA-Z0-9_-]{5,10}$/, message: '用户名格式错误', trigger: 'blur' },
+    {validator: validatorUserName, trigger: 'blur' },
+  ],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { min: 6, max: 15, message: '密码长度在6-15之间', trigger: 'blur' },
+  ]
+}
+
 const login = async () => {
+  await loginForms.value?.validate()
   loading.value = true
+  
   // console.log(loginForm.value);
   try {
     await userStore.userLogin(loginForm.value)  
@@ -58,6 +88,7 @@ const login = async () => {
     ElNotification({
       type: 'success',
       message: '登录成功',
+      title: `HI,${getTime()}好`
     })
   } catch (error) {
     loading.value = false
@@ -68,6 +99,8 @@ const login = async () => {
     })
   }
 }
+
+
 
 </script>
 
