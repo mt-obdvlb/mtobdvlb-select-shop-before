@@ -23,16 +23,16 @@ enum API {
 
 }
 //登录接口
-export const reqLogin = (data: any) => {
+export const reqLogin = (data: loginFormData) => {
   // console.log(data);
   
-  return request.post<any, any>(API.LOGIN_URL, data)
+  return request.post<any, loginResponseData>(API.LOGIN_URL, data)
 }
 //获取用户信息
 
 export const reqUserInfo = () =>
 
-  request.get<any, any>(API.USERINFO_URL)
+  request.get<any, userInfoReponseData>(API.USERINFO_URL)
 
 //退出登录
 

@@ -1,6 +1,6 @@
 import { defineStore } from "pinia"
 import { reqLogin,reqUserInfo, reqLogout } from "../../api/user";
-import type { loginFormData, loginResponseData } from "../../api/user/type";
+import type { loginFormData, loginResponseData, userInfoReponseData } from "../../api/user/type";
 import type { UserState } from "./types/type";
 import { routes } from "../../router/routes";
 
@@ -14,8 +14,8 @@ const useUserStore = defineStore("User", {
     }
   },
   actions: {
-    async userLogin (data: any) {
-      const res:any = await reqLogin(data)
+    async userLogin (data: loginFormData) {
+      const res:loginResponseData = await reqLogin(data)
       if (res.code === 200) {
         // 登录成功
         this.token = (res.data as string)
@@ -26,7 +26,7 @@ const useUserStore = defineStore("User", {
       }
     },
     async userInfo () {
-      const res = await reqUserInfo()
+      const res:userInfoReponseData = await reqUserInfo()
       if(res.code === 200) {
         this.username = res.data.name
         this.avatar = res.data.avatar
@@ -36,7 +36,7 @@ const useUserStore = defineStore("User", {
       }
     },
     async userLogout () {
-      const res = await reqLogout()
+      const res:any = await reqLogout()
       console.log(res)
       if(res.code === 200) {
         this.token = ''
