@@ -2,11 +2,13 @@ import { defineStore } from "pinia"
 import { reqLogin } from "../../api/user";
 import type { loginFormData, loginResponseData } from "../../api/user/type";
 import type { UserState } from "./types/type";
+import { routes } from "../../router/routes";
 
 const useUserStore = defineStore("User", {
   state: (): UserState => {
     return {
       token: '',
+      menuRoutes: routes,
     }
   },
   actions: {
