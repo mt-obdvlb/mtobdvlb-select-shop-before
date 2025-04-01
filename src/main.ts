@@ -10,6 +10,7 @@ import router from './router'
 //@ts-ignore忽略当前文件ts类型的检测否则有红色提示(打包会失败)
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import pinia from './store';
+import './permission.ts'
 
 
 const app = createApp(App)
