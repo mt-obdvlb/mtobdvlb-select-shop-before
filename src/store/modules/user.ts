@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import { reqLogin } from "../../api/user";
+import { reqLogin,reqUserInfo } from "../../api/user";
 import type { loginFormData, loginResponseData } from "../../api/user/type";
 import type { UserState } from "./types/type";
 import { routes } from "../../router/routes";
@@ -9,6 +9,8 @@ const useUserStore = defineStore("User", {
     return {
       token: '',
       menuRoutes: routes,
+      username: '',
+      avatar: '',
     }
   },
   actions: {
@@ -22,6 +24,18 @@ const useUserStore = defineStore("User", {
       } else {
         return Promise.reject(new Error(res.data.message))
       }
+    },
+    async userInfo () {
+      const res = await reqUserInfo()
+      if(res.code === 200) {
+        this.username = res.data.checkUser.username
+        this.avatar = res.data.checkUser.avatar
+      } 
+    },
+    userLogout () {
+      this.token = ''
+      this.username = ''
+      this.avatar = ''
     }
   },
   getters: {

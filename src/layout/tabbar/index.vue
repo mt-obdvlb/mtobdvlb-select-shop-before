@@ -21,14 +21,15 @@
       <el-button size="default" icon="Refresh" @click="updateRefresh" circle></el-button>
       <el-button size="default" icon="FullScreen" @click="fullScreen" circle></el-button>
       <el-button size="default" icon="Setting" @click="" circle></el-button>
-      <el-image src="../../../public/logo.png"></el-image>
+      <el-image :src="userStore.avatar"></el-image>
       <el-dropdown>
-        <el-button type="primary">
+        <span class="el-dropdown-link">
+          {{ userStore.username }}
           <el-icon class="el-icon--right"><arrow-down /></el-icon>
-        </el-button>
+        </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>退出登录</el-dropdown-item>
+            <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -38,10 +39,14 @@
 </template>
 
 <script setup lang="ts">
+import useUserStore from '../../store/modules/user';
 import useLayoutSettingStore from '../../store/modules/setting'
 import { useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 const layoutSettingStore = useLayoutSettingStore()
 const route = useRoute()
+const router = useRouter()
+const userStore = useUserStore()
 
 const changeIcon = () => {
   layoutSettingStore.isCollapsed = !layoutSettingStore.isCollapsed
@@ -59,6 +64,16 @@ const fullScreen = () => {
       document.exitFullscreen()
     }
   }
+}
+
+const logout = () => {
+  userStore.userLogout()
+  router.push({
+    path: '/login',
+    query: {
+      redirect: route.path
+    }
+  })
 }
 
 defineOptions({
@@ -87,8 +102,15 @@ defineOptions({
 
   .tabbar_right {
     .el-image {
+      border-radius: 50%;
       width: 24px;
       height: 24px;
+      
+    }
+
+    .el-dropdown-link {
+      margin-top: 7px;
+      margin-left: 5px;
     }
   }
 }

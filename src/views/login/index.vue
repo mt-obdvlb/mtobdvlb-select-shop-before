@@ -15,7 +15,7 @@
             v-model="loginForm.username"
             :prefix-icon='User'
              />
-            
+
           </el-form-item>
           <el-form-item prop="password"  label="" size="normal">
             <el-input 
@@ -43,14 +43,16 @@
 <script setup lang="ts">
 import { User, Lock } from '@element-plus/icons-vue'; 
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import useUserStore from '../../store/modules/user';
 import { ElNotification } from 'element-plus'
 import { getTime } from '../../utils/time';
 const userStore = useUserStore()
 const router = useRouter()
 const loginForms = ref()
+const route = useRoute()
 let loading = ref(false)
+
 const loginForm = ref({
   username: 'admin',
   password: '111111'
@@ -83,8 +85,9 @@ const login = async () => {
   
   // console.log(loginForm.value);
   try {
-    await userStore.userLogin(loginForm.value)  
-    router.push('/')
+    await userStore.userLogin(loginForm.value)
+    const redirect = route.query.redirect as string
+    router.push(redirect || '/')
     ElNotification({
       type: 'success',
       message: '登录成功',

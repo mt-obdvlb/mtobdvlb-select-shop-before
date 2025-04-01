@@ -1,12 +1,19 @@
 import axios from "axios";
 import { ElMessage } from "element-plus";
+import useUserStore from "../store/modules/user";
 //创建axios实例
+
+
 let request = axios.create({
     baseURL: '/api', //请求地址
     timeout: 5000
 })
 //请求拦截器
 request.interceptors.request.use(config => {
+    const userStore = useUserStore();
+    if (userStore.token) {
+        config.headers.token = userStore.token
+    }
     return config;
 });
 //响应拦截器
