@@ -18,7 +18,7 @@
     </el-col>
 
     <el-col span="12" class="tabbar_right">
-      <el-button size="default" icon="Refresh" @click="" circle></el-button>
+      <el-button size="default" icon="Refresh" @click="updateRefresh" circle></el-button>
       <el-button size="default" icon="FullScreen" @click="" circle></el-button>
       <el-button size="default" icon="Setting" @click="" circle></el-button>
       <el-image src="../../../public/logo.png"></el-image>
@@ -45,8 +45,12 @@ const route = useRoute()
 
 const changeIcon = () => {
   layoutSettingStore.isCollapsed = !layoutSettingStore.isCollapsed
-
 }
+
+const updateRefresh = () => {
+  layoutSettingStore.refresh = !layoutSettingStore.refresh
+}
+
 defineOptions({
   name: 'Tabbar'
 })
