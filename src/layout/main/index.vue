@@ -8,7 +8,9 @@
 </template>
 
 <script setup lang="ts">
-
+defineOptions({
+  name: 'Main'
+})
 </script>
 
 <style scoped lang="scss">

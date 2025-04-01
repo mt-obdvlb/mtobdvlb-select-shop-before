@@ -7,6 +7,9 @@
 
 <script setup lang="ts">
 import setting from '../../setting';
+defineOptions({
+  name: 'Logo'
+})
 </script>
 
 <style scoped lang="scss">
@@ -16,6 +19,7 @@ import setting from '../../setting';
   display: flex;
   align-items: center;
   color: white;
+  margin-top: 20px;
   img {
     width: 40px;
     height: 40px;
@@ -24,6 +28,7 @@ import setting from '../../setting';
   p {
     font-size: $base-logo-title-fontSize;
     margin-left: 10px;
+    white-space: nowrap;
   }
 }
 

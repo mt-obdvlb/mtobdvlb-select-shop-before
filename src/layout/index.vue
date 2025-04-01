@@ -1,10 +1,11 @@
 <template>
-  <div class="layout_container">
-    <el-container>
-      <el-aside class="layout_slider">Aside
+    <el-container class="layout_container">
+      <el-aside class="layout_slider"
+      :class="{'is-collapse': layoutSettingStore.isCollapsed ?true: false}"
+      >
         <Logo></Logo>
         <el-scrollbar class="scrollbar">
-          <el-menu background-color="#001529" text-color="white" router
+          <el-menu background-color="#001529" text-color="white" router :collapse="layoutSettingStore.isCollapsed"
             :default-active="route.path"
           >
             <Menu :menuList="userStore.menuRoutes"></Menu>
@@ -12,16 +13,15 @@
         </el-scrollbar>
       </el-aside>
   
-      <el-container>
-        <el-header class="layout_tabbar">
+      <el-container >
+        <el-header class="layout_tabbar" :class="{'is-collapse': layoutSettingStore.isCollapsed ?true: false}">
           <Tabbar></Tabbar>
         </el-header>
-          <el-main class="layout_main">
+          <el-main class="layout_main" :class="{'is-collapse': layoutSettingStore.isCollapsed ?true: false}">
             <Main></Main>
           </el-main>
       </el-container>
     </el-container>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -31,46 +31,42 @@ import Main from './main/index.vue'
 import Tabbar from './tabbar/index.vue'
 import useUserStore from '../store/modules/user';
 import { useRoute } from 'vue-router';
+import useLayoutSettingStore from '../store/modules/setting';
 
 const route = useRoute()
 const userStore = useUserStore()
+const layoutSettingStore = useLayoutSettingStore()
 
+defineOptions({
+  name: 'Layout'
+})
 </script>
 
 <style scoped lang="scss">
 .layout_container {
-  width: 100%;
-  height: 100vh;
+  
   .layout_slider {
-    width: $base-menu-width;
     height: 100vh;
+    transition: all .3s;
+    width: $base-menu-width;
     background-color: $base-menu-background;
     .scrollbar{
-      width: 100%;
-      height: calc(100vh - $base-menu-logo-height);
+      background-color: $base-menu-background;
       .el-menu{
         border-right: none;
       }
     }
+    &.is-collapse{
+      width: $base-menu-min-width;
+    }
   }
   .layout_tabbar {
-    width: calc(100% - #{$base-menu-width});
-    height: $base-tabbar-height;
-    position: fixed;
-    top: 0;
-    right: 0;
     padding: 0;
-
   }
   .layout_main {
-    width: calc(100% - #{$base-menu-width});
-    height: calc(100vh - #{$base-tabbar-height});
+
     background-color: #333;
-    position: absolute;
-    right: 0;
-    bottom: 0;
     padding: 20px;
-    overflow: auto;
   }
 }
 </style>

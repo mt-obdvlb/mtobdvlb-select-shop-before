@@ -17,7 +17,7 @@ export const routes = [
     component: () => import("@/layout/index.vue"),
     redirect: "/home",
     meta: {
-      title: 'layout',
+      title: '',
       hidden: false
     },
     children: [
@@ -61,6 +61,7 @@ export const routes = [
       title: '权限管理',
       icon: 'Lock'
     },
+    redirect: '/acl/user',
     children: [
       {
         path: '/acl/user',
@@ -103,6 +104,7 @@ export const routes = [
       title: '商品管理',
       icon: 'Goods'
     },
+    redirect: '/product/trademark',
     children: [
       {
         path: '/product/trademark',
