@@ -30,12 +30,13 @@ router.beforeEach((to, from, next) => {
                     })
 
                 } catch(error) {
-                    userStore.userLogout()
-                    next({
-                        path: '/login',
-                        query: {
-                            redirect: to.path
-                        }
+                    userStore.userLogout().then(() => {
+                        next({
+                            path: '/login',
+                            query: {
+                                redirect: to.path
+                            }
+                        })
                     })
                 }
             }

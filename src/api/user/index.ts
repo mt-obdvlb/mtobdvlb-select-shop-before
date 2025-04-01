@@ -15,24 +15,24 @@ import type {
 
 enum API {
 
-  LOGIN_URL = '/user/login',
+  LOGIN_URL = '/admin/acl/index/login',
 
-  USERINFO_URL = '/user/info',
+  USERINFO_URL = '/admin/acl/index/info',
 
-  LOGOUT_URL = '/user/logout',
+  LOGOUT_URL = '/admin/acl/index/logout',
 
 }
 //登录接口
-export const reqLogin = (data: loginFormData) => {
+export const reqLogin = (data: any) => {
   // console.log(data);
   
-  return request.post<any, loginResponseData>(API.LOGIN_URL, data)
+  return request.post<any, any>(API.LOGIN_URL, data)
 }
 //获取用户信息
 
 export const reqUserInfo = () =>
 
-  request.get<any, userInfoReponseData>(API.USERINFO_URL)
+  request.get<any, any>(API.USERINFO_URL)
 
 //退出登录
 

@@ -5,7 +5,7 @@ import useUserStore from "../store/modules/user";
 
 
 let request = axios.create({
-    baseURL: '/api', //请求地址
+    baseURL: 'https://adminlearn.reiko.lol/prod_api', //请求地址
     timeout: 5000
 })
 //请求拦截器
