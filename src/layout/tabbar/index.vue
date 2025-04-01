@@ -19,7 +19,7 @@
 
     <el-col span="12" class="tabbar_right">
       <el-button size="default" icon="Refresh" @click="updateRefresh" circle></el-button>
-      <el-button size="default" icon="FullScreen" @click="" circle></el-button>
+      <el-button size="default" icon="FullScreen" @click="fullScreen" circle></el-button>
       <el-button size="default" icon="Setting" @click="" circle></el-button>
       <el-image src="../../../public/logo.png"></el-image>
       <el-dropdown>
@@ -49,6 +49,16 @@ const changeIcon = () => {
 
 const updateRefresh = () => {
   layoutSettingStore.refresh = !layoutSettingStore.refresh
+}
+
+const fullScreen = () => {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen() 
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen()
+    }
+  }
 }
 
 defineOptions({
