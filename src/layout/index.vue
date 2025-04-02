@@ -64,9 +64,8 @@ defineOptions({
     padding: 0;
   }
   .layout_main {
-
-    background-color: #333;
     padding: 20px;
+    background-color: white;
   }
 }
 </style>
