@@ -23,8 +23,11 @@
           <template #="{row, $index}">
             <el-button type="primary" icon="Edit" @click="$event => updateTrademark(row)"
             ></el-button>
-            <el-button type="danger" icon="Delete"
-            ></el-button>
+            <el-popconfirm title="你确定要删除吗" icon="Delete" @confirm="deleteTrademark(row)">
+              <template #reference>
+                <el-button type="danger" icon="Delete"></el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
@@ -70,7 +73,7 @@
 
 <script setup lang="ts">
 import {ref} from 'vue';
-import {reqAddOrUpdateTrademark, reqHasTrademark} from "@/api/product/trademark";
+import {reqAddOrUpdateTrademark, reqDeleteTrademark, reqHasTrademark} from "@/api/product/trademark";
 import {onMounted} from "vue";
 import type {Records, TradeMark, TradeMarkResponseData} from "@/api/product/trademark/type.ts";
 import {ElMessage} from "element-plus";
@@ -143,6 +146,16 @@ const beforeAvatarUpload = (file: File) => {
 const handleAvatarSuccess = (res: any, file: any) => {
   trademarkParams.value.logoUrl = 'https://mtobdvlb-web.oss-cn-beijing.aliyuncs.com/2.png'
 
+}
+
+const deleteTrademark = async (row: TradeMark) => {
+  const res = await reqDeleteTrademark(row.id)
+  if(res.code === 200) {
+    ElMessage.success('删除成功')
+    getHasTrademark()
+  } else {
+    ElMessage.error('删除失败')
+  }
 }
 
 </script>
