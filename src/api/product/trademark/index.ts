@@ -1,11 +1,21 @@
 import request from '@/utils/request.ts'
-import type {TradeMarkResponseData} from "./type.ts";
+import type {TradeMark, TradeMarkResponseData} from "./type.ts";
 
 enum API {
-    TRADEMARK_URL = '/admin/product/baseTrademark/'
+    TRADEMARK_URL = '/admin/product/baseTrademark/',
+    AddTrademark = '/admin/product/baseTrademark/save',
+    UpdateTrademark = '/admin/product/baseTrademark/update',
 }
 
 
 
 export const reqHasTrademark = (page: number, limit: number) =>
     request.get<any, TradeMarkResponseData>(API.TRADEMARK_URL + `${page}/${limit}`)
+
+export const reqAddOrUpdateTrademark = (data: TradeMark) => {
+    if (data.id) {
+        return request.put<any, TradeMarkResponseData>(API.UpdateTrademark, data)
+    } else {
+        return request.post<any, TradeMarkResponseData>(API.AddTrademark, data)
+    }
+}

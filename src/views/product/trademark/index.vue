@@ -44,18 +44,18 @@
       <el-form
           style="width: 80%"
       >
-        <el-form-item label="品牌名称"  label-width="80px">
-          <el-input v-model="trademarkName" placeholder="请输入品牌名称"></el-input>
+        <el-form-item label="品牌名称"  label-width="80px" required>
+          <el-input v-model="trademarkParams.tmName" placeholder="请输入品牌名称"></el-input>
         </el-form-item>
         <el-form-item label="品牌Logo" label-width="80px">
           <el-upload
               class="avatar-uploader"
-              action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+              action="https://adminlearn.reiko.lol/prod_api/admin/product/fileUpload"
               :show-file-list="false"
               :on-success="handleAvatarSuccess"
               :before-upload="beforeAvatarUpload"
           >
-            <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+            <el-image v-if="true" src='https://mtobdvlb-web.oss-cn-beijing.aliyuncs.com/2.png' class="avatar" />
             <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
           </el-upload>
         </el-form-item>
@@ -70,20 +70,25 @@
 
 <script setup lang="ts">
 import {ref} from 'vue';
-import {reqHasTrademark} from "@/api/product/trademark";
+import {reqAddOrUpdateTrademark, reqHasTrademark} from "@/api/product/trademark";
 import {onMounted} from "vue";
-import type {Records, TradeMarkResponseData} from "@/api/product/trademark/type.ts";
+import type {Records, TradeMark, TradeMarkResponseData} from "@/api/product/trademark/type.ts";
+import {ElMessage} from "element-plus";
 
 let dialogVisible = ref<boolean>(false);
 let trademarkList = ref<Records>([]);
 let pageNo = ref<number>(1);
 let limit = ref<number>(3);
 let total = ref<number>(0);
+let trademarkParams = ref<TradeMark>({
+  logoUrl: 'https://mtobdvlb-web.oss-cn-beijing.aliyuncs.com/2.png'
+})
 const getHasTrademark = async () => {
-  const result: TradeMarkResponseData3 = await reqHasTrademark(pageNo.value, limit.value);
+  const result: TradeMarkResponseData = await reqHasTrademark(pageNo.value, limit.value);
   if(result.code === 200) {
     total.value = result.data.total;
     trademarkList.value = result.data.records;
+
   } else {
     getHasTrademark()
   }
@@ -97,7 +102,15 @@ const updateTrademark = () => {
   dialogVisible.value = true;
 }
 
-const confirm = () => {
+const confirm = async () => {
+  const res = await reqAddOrUpdateTrademark(trademarkParams.value)
+  if(res.code === 200) {
+    ElMessage.success('添加成功')
+    getHasTrademark()
+    trademarkParams.value.tmName = ''
+  } else {
+    ElMessage.error('添加失败')
+  }
   dialogVisible.value = false;
 }
 
@@ -108,6 +121,25 @@ const cancel = () => {
 onMounted(  () => {
   getHasTrademark()
 })
+
+const beforeAvatarUpload = (file: File) => {
+  const isJPG = file.type === 'image/jpeg';
+  const isLt2M = file.size / 1024 / 1024 < 2;
+
+  if (!isJPG) {
+
+    ElMessage.error('上传头像图片只能是 JPG 格式!');
+  }
+  if (!isLt2M) {
+    ElMessage.error('上传头像图片大小不能超过 2MB!');
+  }
+  return isJPG &&isLt2M;
+}
+
+const handleAvatarSuccess = (res: any, file: any) => {
+  trademarkParams.value.logoUrl = 'https://mtobdvlb-web.oss-cn-beijing.aliyuncs.com/2.png'
+
+}
 
 </script>
 
