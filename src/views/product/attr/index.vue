@@ -1,30 +1,15 @@
 <template>
-  <el-card>
-    <el-form :inline="true">
-      <el-form-item label="一级分类">
-        <el-select>
-          <el-option>1</el-option>
-          <el-option>2</el-option>
-          <el-option>3</el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="二级分类">
-        <el-select>
-          <el-option>1</el-option>
-          <el-option>2</el-option>
-          <el-option>3</el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="三级分类">
-        <el-select>
-          <el-option>1</el-option>
-          <el-option>2</el-option>
-          <el-option>3</el-option>
-        </el-select>
-      </el-form-item>
-    </el-form>
-  </el-card>
+
   <Category></Category>
+  <el-card style="margin-top: 20px">
+    <el-button icon="Plus" type="primary">添加属性</el-button>
+    <el-table border>
+      <el-table-column label="序号" type="index" width="80px" align="center"></el-table-column>
+      <el-table-column label="属性名称" width="120px"></el-table-column>
+      <el-table-column label="属性值"></el-table-column>
+      <el-table-column label="操作" width="120px"></el-table-column>
+    </el-table>
+  </el-card>
 </template>
 
 <script setup lang="ts">
@@ -33,7 +18,5 @@
 </script>
 
 <style scoped lang="scss">
-.el-select {
-  --el-select-width: 120px;
-}
+
 </style>
