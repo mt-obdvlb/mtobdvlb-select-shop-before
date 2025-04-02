@@ -21,7 +21,7 @@
         </el-table-column>
         <el-table-column label="品牌仓库">
           <template #="{row, $index}">
-            <el-button type="primary" icon="Edit" @click="updateTrademark"
+            <el-button type="primary" icon="Edit" @click="$event => updateTrademark(row)"
             ></el-button>
             <el-button type="danger" icon="Delete"
             ></el-button>
@@ -40,7 +40,7 @@
 
       </el-pagination>
     </el-card>
-    <el-dialog title="添加品牌" v-model="dialogVisible">
+    <el-dialog :title="trademarkParams.id?'修改品牌':'添加品牌'" v-model="dialogVisible">
       <el-form
           style="width: 80%"
       >
@@ -95,19 +95,23 @@ const getHasTrademark = async () => {
 }
 
 const addTrademark = () => {
+  trademarkParams.value.tmName = ''
+  trademarkParams.value.id = undefined;
   dialogVisible.value = true;
 }
 
-const updateTrademark = () => {
+const updateTrademark = async (row: TradeMark) => {
   dialogVisible.value = true;
+  trademarkParams.value = row
+
 }
 
 const confirm = async () => {
   const res = await reqAddOrUpdateTrademark(trademarkParams.value)
+  console.log(res)
   if(res.code === 200) {
     ElMessage.success('添加成功')
     getHasTrademark()
-    trademarkParams.value.tmName = ''
   } else {
     ElMessage.error('添加失败')
   }
