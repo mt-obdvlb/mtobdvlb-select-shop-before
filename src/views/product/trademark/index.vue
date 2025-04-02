@@ -31,9 +31,10 @@
         v-model:current-page="pageNo"
         v-model:page-size="limit"
         :page-sizes="[3,6,9]"
-        :total="100"
+        :total="total"
         background
         layout="prev, pager, next, jumper, ->, sizes, total"
+        @change="getHasTrademark"
     >
 
     </el-pagination>
@@ -51,7 +52,7 @@ let pageNo = ref<number>(1);
 let limit = ref<number>(3);
 let total = ref<number>(0);
 const getHasTrademark = async () => {
-  const result: TradeMarkResponseData = await reqHasTrademark(pageNo.value, limit.value);
+  const result: TradeMarkResponseData3 = await reqHasTrademark(pageNo.value, limit.value);
   if(result.code === 200) {
     total.value = result.data.total;
     trademarkList.value = result.data.records;
