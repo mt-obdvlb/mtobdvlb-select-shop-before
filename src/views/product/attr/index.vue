@@ -36,14 +36,14 @@
         <el-table-column label="属性值">
           <template #="{row,$index}">
             <el-input placeholder="请你输入属性值名称" v-model="row.valueName" v-show="row.flag"
-                      @blur="$event => toLook(row, $index)" ref="input"></el-input>
-            <div v-show="!row.flag" @click="$event => toEdit(row)">{{ row.valueName }}</div>
+                      @blur="$event => toLook(row, $index)" :ref="(vc:any) => inputArr[$index] = vc"></el-input>
+            <div v-show="!row.flag" @click="$event => toEdit(row, $index)">{{ row.valueName }}</div>
           </template>
         </el-table-column>
         <el-table-column label="操作">
           <template #="{row}">
             <el-button type="primary" icon="Edit">修改</el-button>
-            <el-button type="danger" icon="Delete">删除</el-button>
+            <el-button type="danger" icon="Delete" @click="attrParams.attrValueList.splice($index, 1)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -55,13 +55,13 @@
 
 <script setup lang="ts">
 import useCategoryStore from "@/store/modules/category.ts";
-import {watch, ref} from "vue";
+import {watch, ref, nextTick} from "vue";
 import {reqAddOrUpdateAttr, reqAttr} from "@/api/product/attr";
 import type {AttrList, AttrResponseData, Attr, AttrValue} from "@/api/product/attr/type.ts";
 import {ElMessage} from "element-plus";
 
 
-const input = ref()
+const inputArr = ref([])
 let attrList = ref<AttrList>([])
 const categoryStore = useCategoryStore();
 const flag = ref<boolean>(true)
@@ -103,10 +103,13 @@ const addAttrValue = () => {
     valueName: '',
     flag: true
   })
+  nextTick(() => {
+    inputArr.value[attrParams.value.attrValueList.length - 1].focus()
+  })
 }
 
 const save = async () => {
-  if(attrParams.value.attrValueList.length === 0) {
+  if (attrParams.value.attrValueList.length === 0) {
     ElMessage.error('属性值不能为空')
     return
   }
@@ -128,11 +131,11 @@ const toLook = (row: AttrValue, $index: number) => {
     attrParams.value.attrValueList.splice($index, 1)
     return
   }
-  if(attrParams.value.attrValueList.find(item => {
-    if(item !== row) {
+  if (attrParams.value.attrValueList.find(item => {
+    if (item !== row) {
       return item.valueName === row.valueName
 
-  }
+    }
   })) {
     ElMessage.error('属性值不能重复')
     return
@@ -140,10 +143,11 @@ const toLook = (row: AttrValue, $index: number) => {
   row.flag = false
 }
 
-const toEdit = (row: AttrValue) => {
+const toEdit = (row: AttrValue, $index: number) => {
   row.flag = true
-  this.$nextTick(() => {
-    this.$refs.input.focus()
+  nextTick(() => {
+    inputArr.value[$index].focus()
+
   })
 }
 
