@@ -16,9 +16,13 @@
         </el-table-column>
         <el-table-column label="操作" width="120px">
           <template #="{row}">
-            <el-button icon="Edit" type="primary" @click="updateAttr">
+            <el-button icon="Edit" type="primary" @click="updateAttr(row)" size="small">
             </el-button>
-            <el-button icon="Delete" type="danger" @click="deleteAttr"></el-button>
+            <el-popconfirm title="你确定要删除吗" @confirm="deleteAttr(row.id)">
+              <template #reference>
+                <el-button size="small" icon="Delete" type="danger"></el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
@@ -55,8 +59,8 @@
 
 <script setup lang="ts">
 import useCategoryStore from "@/store/modules/category.ts";
-import {watch, ref, nextTick} from "vue";
-import {reqAddOrUpdateAttr, reqAttr} from "@/api/product/attr";
+import {watch, ref, nextTick, onBeforeMount} from "vue";
+import {reqAddOrUpdateAttr, reqAttr, reqDelAttr} from "@/api/product/attr";
 import type {AttrList, AttrResponseData, Attr, AttrValue} from "@/api/product/attr/type.ts";
 import {ElMessage} from "element-plus";
 
@@ -70,6 +74,10 @@ const attrParams = ref<Attr>({
   attrValueList: [],
   categoryId: '',
   categoryLevel: 3
+})
+
+onBeforeMount(() => {
+  categoryStore.$reset()
 })
 
 watch(() => categoryStore.category3Id, async () => {
@@ -94,8 +102,9 @@ const addAttr = () => {
   attrParams.value.categoryId = categoryStore.category3Id
 }
 
-const updateAttr = () => {
+const updateAttr = (row: Attr) => {
   flag.value = false
+  Object.assign(attrParams.value, JSON.parse(JSON.stringify(row)))
 }
 
 const addAttrValue = () => {
@@ -149,6 +158,16 @@ const toEdit = (row: AttrValue, $index: number) => {
     inputArr.value[$index].focus()
 
   })
+}
+
+const deleteAttr = async (id: number) => {
+  const res = await reqDelAttr(id)
+  if (res.code === 200) {
+    ElMessage.success('删除成功')
+
+  } else {
+    ElMessage.error('删除失败')
+  }
 }
 
 </script>
