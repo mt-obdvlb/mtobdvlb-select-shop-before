@@ -1,6 +1,6 @@
 <template>
   <el-card>
-    <el-form :inline="true">
+    <el-form :inline="true" :disabled="!flag">
       <el-form-item label="一级分类">
         <el-select v-model="categoryStore.category1Id" @change="categoryStore.getCategory2List(categoryStore.category1Id)">
           <el-option v-for="item in categoryStore.category1List" :label="item.name" :key="item.id" :value="item.id"></el-option>
@@ -24,6 +24,7 @@
 import {onMounted} from "vue";
 import useCategoryStore from '@/store/modules/category.ts'
 const categoryStore = useCategoryStore()
+defineProps(['flag'])
 
 onMounted(()=>{
   categoryStore.getCategory1List()

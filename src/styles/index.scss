@@ -1,4 +1,7 @@
-@use './reset.scss';
+body {
+  margin: 0;
+  line-height: 1;
+}
 
 ::-webkit-scrollbar{
   width: 10px;
