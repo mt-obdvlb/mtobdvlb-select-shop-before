@@ -2,18 +2,18 @@
   <el-card>
     <el-form inline class="form">
       <el-form-item label="用户名: ">
-        <el-input placeholder="请输入搜索用户名"></el-input>
+        <el-input placeholder="请输入搜索用户名" v-model="keyword"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="Search">查询</el-button>
+        <el-button type="primary" icon="Search" :disabled="!keyword" @click="getUser">查询</el-button>
         <el-button type="primary" icon="Search">重置</el-button>
       </el-form-item>
     </el-form>
   </el-card>
   <el-card style="margin-top: 20px;">
     <el-button type="primary" @click="addUser">添加用户</el-button>
-    <el-button type="danger">批量删除</el-button>
-    <el-table border style="margin: 10px;" :data="userArr">
+    <el-button type="danger" :disabled="selectIdList.length === 0" @click="deleteSelectUser">批量删除</el-button>
+    <el-table border style="margin: 10px;" :data="userArr" @selection-change="handleSelectChange">
       <el-table-column type="selection"></el-table-column>
       <el-table-column label="#" type="index"></el-table-column>
       <el-table-column label="ID" prop="id"></el-table-column>
@@ -28,7 +28,7 @@
           <el-button type="primary" icon="Edit" size="small" @click="updateUser(row)">编辑</el-button>
           <el-popconfirm
               title="确定删除吗？"
-              @confirm=""
+              @confirm="removeUser(row.id)"
           >
             <template #reference>
               <el-button type="danger" icon="Delete" size="small">删除</el-button>
@@ -97,7 +97,7 @@
 
 <script setup lang="ts">
 import {onMounted, ref} from 'vue';
-import {getUserList, addOrUpdateUser, getUserRole, assignUserRole} from "@/api/acl/user";
+import {getUserList, addOrUpdateUser, getUserRole, assignUserRole, deleteUser, deleteBatchUser} from "@/api/acl/user";
 import {
   type AllRole,
   type AllRoleResponseData,
@@ -108,6 +108,7 @@ import {
 import {ElMessage} from "element-plus";
 import _ from 'lodash'
 
+let keyword = ref<string>('')
 let roleList = ref<AllRole>([])
 let checkedRoleList = ref<AllRole>([])
 let indeterminate = ref<boolean>(true)
@@ -119,6 +120,7 @@ let total = ref<number>(0)
 const userArr = ref<Records>([])
 let drawer = ref<boolean>(false)
 let drawer1 = ref<boolean>(false)
+let selectIdList = ref<number[]>([])
 const user = ref<User>({
   username: '',
   name: '',
@@ -145,7 +147,7 @@ onMounted(() => {
 })
 
 const getUser = async () => {
-  const res = await getUserList(pageNo.value, pageSize.value)
+  const res = await getUserList(pageNo.value, pageSize.value, keyword.value)
   console.log(res)
   if (res.code === 200) {
     userArr.value = res.data.records
@@ -228,6 +230,31 @@ const updateRole = async () => {
       type: 'error',
       message: '修改失败'
     })
+  }
+}
+
+const removeUser = async (id: number) => {
+  const res = await deleteUser(id)
+  if (res.code === 200) {
+    ElMessage.success('删除成功')
+    getUser()
+  } else {
+    ElMessage.error('删除失败')
+  }
+}
+
+const handleSelectChange = (value: number[]) => {
+    selectIdList.value = value
+  console.log(selectIdList.value)
+}
+
+const deleteSelectUser = async () => {
+  const res = await deleteBatchUser(selectIdList.value)
+  if (res.code === 200) {
+    ElMessage.success('删除成功')
+    getUser()
+  } else {
+    ElMessage.error('删除失败')
   }
 }
 

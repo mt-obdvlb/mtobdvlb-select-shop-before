@@ -7,11 +7,18 @@ enum API {
     UpdateUser = '/admin/acl/user/update',
     AllRole = '/admin/acl/user/toAssign/',
     UpdateUserRole = '/admin/acl/user/doAssignRole',
+    DeleteUser = '/admin/acl/user/remove/',
+    DeleteBatchUser = '/admin/acl/user/batchRemove'
 }
 
-export const getUserList = (page: number, limit: number) =>
+export const getUserList = (page: number, limit: number, username: string) =>
     request.get<any, UserResponseData>(
-        `${API.AllUser}${page}/${limit}`
+         `${API.AllUser}${page}/${limit}`,
+        {
+            params: {
+                username
+            }
+        }
     );
 
 export const addOrUpdateUser = (user: User) => {
@@ -33,5 +40,20 @@ export const assignUserRole = (data: AssignRoleData) =>
         {
             userId: data.userId,
             roleIdList: data.roleIdList
+        }
+    );
+
+export const deleteUser = (userId: number) =>
+    request.delete<any, any>(
+        `${API.DeleteUser}${userId}`
+    );
+
+export const deleteBatchUser = (idList: number[]) =>
+    request.delete<any, any>(
+        `${API.DeleteBatchUser}`,
+        {
+            data: {
+                idList
+            }
         }
     );
