@@ -46,13 +46,13 @@
         :total="total"
         background
         layout="prev, pager, next, jumper, ->, sizes, total"
-      @change="getUser"
+        @change="getUser"
     />
 
   </el-card>
   <el-drawer v-model="drawer" @closed="reset">
     <template #header>
-      <h4>{{user.id ? '修改用户' : '添加用户'}}</h4>
+      <h4>{{ user.id ? '修改用户' : '添加用户' }}</h4>
     </template>
     <template #default>
       <el-form :model="user" :rules="rules" ref="formRef">
@@ -62,7 +62,7 @@
         <el-form-item label="用户名称: " prop="username">
           <el-input placeholder="请输入用户名称" v-model="user.username"></el-input>
         </el-form-item>
-        <el-form-item label="用户密码: " prop="password"  v-if="!user.id">
+        <el-form-item label="用户密码: " prop="password" v-if="!user.id">
           <el-input placeholder="请输入用户密码" v-model="user.password"></el-input>
         </el-form-item>
       </el-form>
@@ -75,15 +75,16 @@
   <el-drawer v-model="drawer1">
     <el-form>
       <el-form-item label="用户姓名">
-        <el-input v-model="user.name" disabled />
+        <el-input v-model="user.name" disabled/>
       </el-form-item>
       <el-form-item label="角色列表">
         <el-checkbox v-model="checkAll"
-        :indeterminate="indeterminate"
+                     :indeterminate="indeterminate"
                      @change="handleCheckAll"
-        >全选</el-checkbox>
-        <el-checkbox-group v-model="checkedArr" @change="handleChangeCheck">
-          <el-checkbox v-for="(role,index) in arr" :key="role" :value="role">{{role}}</el-checkbox>
+        >全选
+        </el-checkbox>
+        <el-checkbox-group v-model="checkedRoleList" @change="handleChangeCheck">
+          <el-checkbox v-for="(role,index) in roleList" :key="role" :value="role">{{ role.roleName }}</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
     </el-form>
@@ -96,13 +97,19 @@
 
 <script setup lang="ts">
 import {onMounted, ref} from 'vue';
-import {getUserList, addOrUpdateUser} from "@/api/acl/user";
-import {Records, type User, type UserResponseData} from "@/api/acl/user/type.ts";
+import {getUserList, addOrUpdateUser, getUserRole, assignUserRole} from "@/api/acl/user";
+import {
+  type AllRole,
+  type AllRoleResponseData,
+  Records,
+  type User,
+  type UserResponseData
+} from "@/api/acl/user/type.ts";
 import {ElMessage} from "element-plus";
 import _ from 'lodash'
 
-let arr = ref([1,2,3,4])
-let checkedArr =ref([1])
+let roleList = ref<AllRole>([])
+let checkedRoleList = ref<AllRole>([])
 let indeterminate = ref<boolean>(true)
 let checkAll = ref<boolean>(false)
 const formRef = ref()
@@ -140,7 +147,7 @@ onMounted(() => {
 const getUser = async () => {
   const res = await getUserList(pageNo.value, pageSize.value)
   console.log(res)
-  if(res.code === 200) {
+  if (res.code === 200) {
     userArr.value = res.data.records
     total.value = res.data.total
 
@@ -151,7 +158,7 @@ const addUser = () => {
   drawer.value = true
 }
 
-const updateUser = (row:User) => {
+const updateUser = (row: User) => {
   console.log(row)
   user.value = _.cloneDeep(row)
   drawer.value = true
@@ -162,7 +169,7 @@ const addOrUpdate = async () => {
 
   await formRef.value?.validate()
   const res: UserResponseData = await addOrUpdateUser(user.value)
-  if(res.code === 200) {
+  if (res.code === 200) {
     drawer.value = false
     ElMessage({
       type: 'success',
@@ -186,25 +193,30 @@ const reset = () => {
   }
 }
 
-const setRole = (row: User) => {
+const setRole = async (row: User) => {
   user.value = _.cloneDeep(row)
-  drawer1.value = true
+  const res: AllRoleResponseData = await getUserRole(row.id)
+  if (res.code === 200) {
+    roleList.value = res.data.allRolesList
+    checkedRoleList.value = res.data.assignRoles
+    drawer1.value = true
+  }
 }
 
 const handleCheckAll = (val: boolean) => {
-  checkedArr.value = val ? arr.value : []
+  checkedRoleList.value = val ? roleList.value : []
   indeterminate.value = false
 }
 
 const handleChangeCheck = (value: number[]) => {
   const checkedCount = value.length
-  indeterminate.value = checkedCount > 0 && checkedCount < arr.value.length
-  checkAll.value = checkedCount === arr.value.length
+  indeterminate.value = checkedCount > 0 && checkedCount < roleList.value.length
+  checkAll.value = checkedCount === roleList.value.length
 }
 
 const updateRole = async () => {
-  const res = await updateUserRole(user.value.id, checkedArr.value)
-  if(res.code === 200) {
+  const res = await assignUserRole({userId: user.value.id, roleIdList: roleList.value.map(item => item.id)})
+  if (res.code === 200) {
     ElMessage({
       type: 'success',
       message: '修改成功'
