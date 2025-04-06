@@ -11,7 +11,7 @@
     </el-form>
   </el-card>
   <el-card style="margin-top: 20px;">
-    <el-button type="primary" @click="drawer=true">添加用户</el-button>
+    <el-button type="primary" @click="addUser">添加用户</el-button>
     <el-button type="danger">批量删除</el-button>
     <el-table border style="margin: 10px;" :data="userArr">
       <el-table-column type="selection"></el-table-column>
@@ -52,38 +52,44 @@
   </el-card>
   <el-drawer v-model="drawer" >
     <template #header>
-      <h4>添加用户</h4>
+      <h4>{{user.id ? '修改用户' : '添加用户'}}</h4>
     </template>
     <template #default>
       <el-form>
         <el-form-item label="用户名: ">
-          <el-input placeholder="请输入用户名"></el-input>
+          <el-input placeholder="请输入用户名" v-model="user.name"></el-input>
         </el-form-item>
         <el-form-item label="用户名称: ">
-          <el-input placeholder="请输入用户名称"></el-input>
+          <el-input placeholder="请输入用户名称" v-model="user.username"></el-input>
         </el-form-item>
         <el-form-item label="用户密码: ">
-          <el-input placeholder="请输入用户密码"></el-input>
+          <el-input placeholder="请输入用户密码" v-model="user.password"></el-input>
         </el-form-item>
       </el-form>
     </template>
     <template #footer>
       <el-button @click="drawer=false">取消</el-button>
-      <el-button type="primary" @click="drawer=false">确定</el-button>
+      <el-button type="primary" @click="addOrUpdate">确定</el-button>
     </template>
   </el-drawer>
 </template>
 
 <script setup lang="ts">
 import {onMounted, ref} from 'vue';
-import {getUserList} from "@/api/acl/user";
-import {Records, type User} from "@/api/acl/user/type.ts";
+import {getUserList, addOrUpdateUser} from "@/api/acl/user";
+import {Records, type User, type UserResponseData} from "@/api/acl/user/type.ts";
+import {ElMessage} from "element-plus";
 
 let pageNo = ref<number>(1)
 let pageSize = ref<number>(5)
 let total = ref<number>(0)
 let userArr = ref<Records>([])
 let drawer = ref<boolean>(false)
+const user = ref<User>({
+  username: '',
+  name: '',
+  password: ''
+})
 
 onMounted(() => {
   getUser()
@@ -99,9 +105,36 @@ const getUser = async () => {
   }
 }
 
+const addUser = () => {
+  user.value = {
+    username: '',
+    name: '',
+    password: ''
+  }
+  drawer.value = true
+}
+
 const updateUser = (row:User) => {
+  user.value = row
   drawer.value = true
 
+}
+
+const addOrUpdate = async () => {
+  const res: UserResponseData = await addOrUpdateUser(user.value)
+  if(res.code === 200) {
+    getUser()
+    drawer.value = false
+    ElMessage({
+      type: 'success',
+      message: user.value.id ? '修改成功' : '添加成功'
+    })
+  } else {
+    ElMessage({
+      type: 'error',
+      message: user.value.id ? '修改失败' : '添加失败'
+    })
+  }
 }
 
 </script>
