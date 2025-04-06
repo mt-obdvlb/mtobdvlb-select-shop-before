@@ -24,7 +24,7 @@
       <el-table-column label="更新时间" prop="updateTime" show-overflow-tooltip></el-table-column>
       <el-table-column label="操作" width="280px" align="center">
         <template #="{row,$index}">
-          <el-button type="primary" icon="User" size="small">分配角色</el-button>
+          <el-button type="primary" icon="User" size="small" @click="setRole(row)">分配角色</el-button>
           <el-button type="primary" icon="Edit" size="small" @click="updateUser(row)">编辑</el-button>
           <el-popconfirm
               title="确定删除吗？"
@@ -72,6 +72,26 @@
       <el-button type="primary" @click="addOrUpdate">确定</el-button>
     </template>
   </el-drawer>
+  <el-drawer v-model="drawer1">
+    <el-form>
+      <el-form-item label="用户姓名">
+        <el-input v-model="user.name" disabled />
+      </el-form-item>
+      <el-form-item label="角色列表">
+        <el-checkbox v-model="checkAll"
+        :indeterminate="indeterminate"
+                     @change="handleCheckAll"
+        >全选</el-checkbox>
+        <el-checkbox-group v-model="checkedArr" @change="handleChangeCheck">
+          <el-checkbox v-for="(role,index) in arr" :key="role" :value="role">{{role}}</el-checkbox>
+        </el-checkbox-group>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <el-button @click="drawer1=false">取消</el-button>
+      <el-button type="primary" @click="updateRole">确定</el-button>
+    </template>
+  </el-drawer>
 </template>
 
 <script setup lang="ts">
@@ -81,12 +101,17 @@ import {Records, type User, type UserResponseData} from "@/api/acl/user/type.ts"
 import {ElMessage} from "element-plus";
 import _ from 'lodash'
 
+let arr = ref([1,2,3,4])
+let checkedArr =ref([1])
+let indeterminate = ref<boolean>(true)
+let checkAll = ref<boolean>(false)
 const formRef = ref()
 let pageNo = ref<number>(1)
 let pageSize = ref<number>(5)
 let total = ref<number>(0)
 const userArr = ref<Records>([])
 let drawer = ref<boolean>(false)
+let drawer1 = ref<boolean>(false)
 const user = ref<User>({
   username: '',
   name: '',
@@ -158,6 +183,39 @@ const reset = () => {
     username: '',
     name: '',
     password: ''
+  }
+}
+
+const setRole = (row: User) => {
+  user.value = _.cloneDeep(row)
+  drawer1.value = true
+}
+
+const handleCheckAll = (val: boolean) => {
+  checkedArr.value = val ? arr.value : []
+  indeterminate.value = false
+}
+
+const handleChangeCheck = (value: number[]) => {
+  const checkedCount = value.length
+  indeterminate.value = checkedCount > 0 && checkedCount < arr.value.length
+  checkAll.value = checkedCount === arr.value.length
+}
+
+const updateRole = async () => {
+  const res = await updateUserRole(user.value.id, checkedArr.value)
+  if(res.code === 200) {
+    ElMessage({
+      type: 'success',
+      message: '修改成功'
+    })
+    drawer1.value = false
+    window.location.reload()
+  } else {
+    ElMessage({
+      type: 'error',
+      message: '修改失败'
+    })
   }
 }
 
