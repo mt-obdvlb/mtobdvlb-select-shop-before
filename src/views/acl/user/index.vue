@@ -11,7 +11,7 @@
     </el-form>
   </el-card>
   <el-card style="margin-top: 20px;">
-    <el-button type="primary">添加用户</el-button>
+    <el-button type="primary" @click="drawer=true">添加用户</el-button>
     <el-button type="danger">批量删除</el-button>
     <el-table border style="margin: 10px;" :data="userArr">
       <el-table-column type="selection"></el-table-column>
@@ -25,7 +25,7 @@
       <el-table-column label="操作" width="280px" align="center">
         <template #="{row,$index}">
           <el-button type="primary" icon="User" size="small">分配角色</el-button>
-          <el-button type="primary" icon="Edit" size="small">编辑</el-button>
+          <el-button type="primary" icon="Edit" size="small" @click="updateUser(row)">编辑</el-button>
           <el-popconfirm
               title="确定删除吗？"
               @confirm=""
@@ -50,17 +50,40 @@
     />
 
   </el-card>
+  <el-drawer v-model="drawer" >
+    <template #header>
+      <h4>添加用户</h4>
+    </template>
+    <template #default>
+      <el-form>
+        <el-form-item label="用户名: ">
+          <el-input placeholder="请输入用户名"></el-input>
+        </el-form-item>
+        <el-form-item label="用户名称: ">
+          <el-input placeholder="请输入用户名称"></el-input>
+        </el-form-item>
+        <el-form-item label="用户密码: ">
+          <el-input placeholder="请输入用户密码"></el-input>
+        </el-form-item>
+      </el-form>
+    </template>
+    <template #footer>
+      <el-button @click="drawer=false">取消</el-button>
+      <el-button type="primary" @click="drawer=false">确定</el-button>
+    </template>
+  </el-drawer>
 </template>
 
 <script setup lang="ts">
 import {onMounted, ref} from 'vue';
 import {getUserList} from "@/api/acl/user";
-import {Records} from "@/api/acl/user/type.ts";
+import {Records, type User} from "@/api/acl/user/type.ts";
 
 let pageNo = ref<number>(1)
 let pageSize = ref<number>(5)
 let total = ref<number>(0)
 let userArr = ref<Records>([])
+let drawer = ref<boolean>(false)
 
 onMounted(() => {
   getUser()
@@ -74,6 +97,11 @@ const getUser = async () => {
     total.value = res.data.total
 
   }
+}
+
+const updateUser = (row:User) => {
+  drawer.value = true
+
 }
 
 </script>
