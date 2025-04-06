@@ -50,19 +50,19 @@
     />
 
   </el-card>
-  <el-drawer v-model="drawer" >
+  <el-drawer v-model="drawer" @closed="reset">
     <template #header>
       <h4>{{user.id ? '修改用户' : '添加用户'}}</h4>
     </template>
     <template #default>
-      <el-form>
-        <el-form-item label="用户名: ">
+      <el-form :model="user" :rules="rules" ref="formRef">
+        <el-form-item label="用户名: " prop="name">
           <el-input placeholder="请输入用户名" v-model="user.name"></el-input>
         </el-form-item>
-        <el-form-item label="用户名称: ">
+        <el-form-item label="用户名称: " prop="username">
           <el-input placeholder="请输入用户名称" v-model="user.username"></el-input>
         </el-form-item>
-        <el-form-item label="用户密码: ">
+        <el-form-item label="用户密码: " prop="password"  v-if="!user.id">
           <el-input placeholder="请输入用户密码" v-model="user.password"></el-input>
         </el-form-item>
       </el-form>
@@ -79,16 +79,33 @@ import {onMounted, ref} from 'vue';
 import {getUserList, addOrUpdateUser} from "@/api/acl/user";
 import {Records, type User, type UserResponseData} from "@/api/acl/user/type.ts";
 import {ElMessage} from "element-plus";
+import _ from 'lodash'
 
+const formRef = ref()
 let pageNo = ref<number>(1)
 let pageSize = ref<number>(5)
 let total = ref<number>(0)
-let userArr = ref<Records>([])
+const userArr = ref<Records>([])
 let drawer = ref<boolean>(false)
 const user = ref<User>({
   username: '',
   name: '',
   password: ''
+})
+
+const rules = ref({
+  username: [
+    {required: true, message: '请输入用户名', trigger: 'blur'},
+    {min: 5, max: 15, message: '长度在 5 到 15 个字符', trigger: 'blur'}
+  ],
+  name: [
+    {required: true, message: '请输入用户名称', trigger: 'blur'},
+    {min: 5, max: 15, message: '长度在 5 到 15 个字符', trigger: 'blur'}
+  ],
+  password: [
+    {required: true, message: '请输入用户密码', trigger: 'blur'},
+    {min: 5, max: 15, message: '长度在 5 到 15 个字符', trigger: 'blur'}
+  ]
 })
 
 onMounted(() => {
@@ -106,34 +123,41 @@ const getUser = async () => {
 }
 
 const addUser = () => {
-  user.value = {
-    username: '',
-    name: '',
-    password: ''
-  }
   drawer.value = true
 }
 
 const updateUser = (row:User) => {
-  user.value = row
+  console.log(row)
+  user.value = _.cloneDeep(row)
   drawer.value = true
 
 }
 
 const addOrUpdate = async () => {
+
+  await formRef.value?.validate()
   const res: UserResponseData = await addOrUpdateUser(user.value)
   if(res.code === 200) {
-    getUser()
     drawer.value = false
     ElMessage({
       type: 'success',
       message: user.value.id ? '修改成功' : '添加成功'
     })
+    window.location.reload()
   } else {
     ElMessage({
       type: 'error',
       message: user.value.id ? '修改失败' : '添加失败'
     })
+  }
+}
+
+const reset = () => {
+  formRef.value?.resetFields()
+  user.value = {
+    username: '',
+    name: '',
+    password: ''
   }
 }
 
