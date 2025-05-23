@@ -1,7 +1,7 @@
 <template>
   <div class="login_container">
     <el-row>
-      <el-col :span="12" :xs="0">左边</el-col>
+      <el-col :span="12" :xs="0"></el-col>
       <el-col :span="12" :xs="24">
         <el-form class="login_form"
         :model="loginForm"
@@ -9,7 +9,7 @@
         ref="loginForms"
         >
           <h1>Hello</h1>
-          <h2>欢迎来到德莱联盟</h2>
+          <h2>欢迎来到mtobdvlb</h2>
           <el-form-item prop="username" label="" size="normal">
             <el-input 
             v-model="loginForm.username"

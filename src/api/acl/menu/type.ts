@@ -1,24 +1,26 @@
 export interface ResponseData {
-    code: number,
-    message: string,
-    ok: boolean
+    code: number;
+    message: string;
+    ok: boolean;
 }
 
-export interface TradeMark {
-    id?: number,
-    tmName: string,
-    logoUrl: string
+export interface Permission {
+    id?: number;
+    createTime?: string;
+    updateTime?: string;
+    pid: number;
+    name: string;
+    code: string;
+    toCode: string;
+    type: number;
+    status: null;
+    level: number;
+    children?: Permission[];
+    select: boolean;
 }
 
-export type Records = TradeMark[]
+export type PermissionList = Permission[]
 
-export interface TradeMarkResponseData extends ResponseData {
-    data: {
-        records: Records,
-        total: number,
-         size: number,
-        current: number,
-        searchCount: boolean,
-        pages: number
-    }
+export interface PermissionResponseData extends ResponseData {
+    data: PermissionList
 }

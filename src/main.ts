@@ -11,6 +11,8 @@ import router from './router'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import pinia from './store';
 import './permission.ts'
+// if you just want to import css
+import 'element-plus/theme-chalk/dark/css-vars.css'
 
 
 const app = createApp(App)

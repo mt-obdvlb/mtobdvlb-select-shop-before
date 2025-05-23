@@ -65,7 +65,6 @@ defineOptions({
   }
   .layout_main {
     padding: 20px;
-    background-color: white;
   }
 }
 </style>
