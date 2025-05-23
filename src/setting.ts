@@ -1,5 +1,5 @@
 export default {
   title: 'mto甄选',
-  logo: 'public/logo.png',
+  logo: '/logo.png',
   logoHidden: true
 }
